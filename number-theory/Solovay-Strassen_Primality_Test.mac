@@ -1,0 +1,34 @@
+/* Solovay-Strassen Primality Test */
+/* Source: ChatGPT */
+
+/* Function to compute modular exponentiation: (base^exp) % mod */
+mod_exp(base, exp, mod) := block(
+    [result: 1],
+    while exp > 0 do (
+        if exp % 2 = 1 then result: (result * base) % mod,
+        base: (base * base) % mod,
+        exp: exp // 2
+    ),
+    return(result)
+);
+
+/* Function to compute the Legendre symbol (a / p) */
+legendre_symbol(a, p) := if mod_exp(a, (p - 1) // 2, p) = 1 then 1 else -1;
+
+/* Solovay-Strassen primality test */
+solovay_strassen(n, k) := block(
+    [i, a, s],
+    if n <= 1 then return(false),
+    if n = 2 or n = 3 then return(true),
+    for i: 1 thru k do (
+        a: random(n - 2) + 2, /* Random a in the range [2, n-1] */
+        s: legendre_symbol(a, n),
+        if s = 0 or mod_exp(a, (n - 1) // 2, n) != s then return(false)
+    ),
+    return(true)
+);
+
+/* Example usage of Solovay-Strassen */
+n: 97; /* Number to test */
+k: 5;  /* Number of iterations */
+solovay_strassen(n, k); /* Test primality of 97 */
